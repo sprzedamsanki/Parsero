@@ -76,7 +76,7 @@ def logo():
     print(bcolors.YELLOW + hello + bcolors.ENDC)
     now = time.strftime("%c")
 
-def conn_check(url, only200):
+def conn_check(url, only200, redirect):
     global pathlist
     pathlist = []
     salida = 1
@@ -106,7 +106,7 @@ def conn_check(url, only200):
 
     for p in pathlist:
         disurl = "http://" + url + '/' + p
-        r1 = http.request('GET', disurl, redirect=False, retries=5)
+        r1 = http.request('GET', disurl, redirect=redirect, retries=5)
         if r1.status == 200:
             print(bcolors.OKGREEN + disurl + ' ' + str(r1.status) + ' ' + str(r1.reason) + bcolors.ENDC)
             count_ok = count_ok + 1
@@ -172,6 +172,7 @@ def main():
     parse.add_argument('-o', action='store_true', dest='only200', help='Show only the "HTTP 200" status code')
     parse.add_argument('-sb', action='store_true', dest='searchbing', help='Search in Bing indexed Disallows')
     parse.add_argument('-f', action='store', dest='file', help='Scan a list of domains from a list')
+    parse.add_argument('-r', action='store_true', dest='redirect', help='Follow redirects')
 
     args = parse.parse_args()
 
@@ -206,8 +207,9 @@ def main():
         start_time = time.time()
         only200 = args.only200
         searchbing = args.searchbing
+        redirect = args.redirect
         date(url)
-        conn_check(url, only200)
+        conn_check(url, only200, redirect)
         if searchbing == True:
             search_bing(url, searchbing, only200)
         print("\nFinished in %0.2f seconds.\n" % (time.time() - start_time))
